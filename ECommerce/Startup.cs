@@ -2,6 +2,7 @@
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(ECommerce.Startup))]
+
 namespace ECommerce
 {
     public partial class Startup

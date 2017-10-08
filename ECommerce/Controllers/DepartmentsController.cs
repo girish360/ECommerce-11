@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using ECommerce.Models;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
+using System;
 using System.Web.Mvc;
-using ECommerce.Models;
 
 namespace ECommerce.Controllers
 {
@@ -42,7 +39,7 @@ namespace ECommerce.Controllers
         }
 
         // POST: Departments/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -51,8 +48,24 @@ namespace ECommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Departments.Add(department);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception x)
+                {                    
+                    if (x.InnerException != null &&
+                        x.InnerException.InnerException != null &&
+                        x.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are records with the same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(String.Empty, x.Message);
+                    }
+                }
             }
 
             return View(department);
@@ -74,7 +87,7 @@ namespace ECommerce.Controllers
         }
 
         // POST: Departments/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -83,8 +96,24 @@ namespace ECommerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(department).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception x)
+                {
+                    if (x.InnerException != null &&
+                                            x.InnerException.InnerException != null &&
+                                            x.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are records with the same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(String.Empty, x.Message);
+                    }
+                }
             }
             return View(department);
         }
@@ -111,8 +140,25 @@ namespace ECommerce.Controllers
         {
             Department department = db.Departments.Find(id);
             db.Departments.Remove(department);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null &&
+                    ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE"))
+                {
+                    ModelState.AddModelError(string.Empty, "The record cant be deleted because it has related records");
+                }
+                else
+                {
+                    ModelState.AddModelError(String.Empty, ex.Message);
+                }
+            }
+            return View(department);
         }
 
         protected override void Dispose(bool disposing)
