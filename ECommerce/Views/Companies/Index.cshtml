@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<ECommerce.Models.Company>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Companies";
 }
 
-<h2>Index</h2>
+<h2>Companies</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", new { }, new { @class = "btn btn-primary" })
 </p>
 <table class="table">
     <tr>
@@ -50,14 +50,18 @@
             @Html.DisplayFor(modelItem => item.Address)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Logo)
+            @if (!string.IsNullOrEmpty(item.Logo))
+            {
+                <img src="@Url.Content(item.Logo)" alt="Image" style="width:100px;height:100px;max-width: 100%; height: auto;" />
+            }
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.CompanyId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.CompanyId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.CompanyId })
+            @Html.ActionLink("Edit", "Edit", new { id=item.CompanyId }, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Details", "Details", new { id=item.CompanyId }, new { @class = "btn btn-info" })
+            @Html.ActionLink("Delete", "Delete", new { id=item.CompanyId }, new { @class = "btn btn-danger" })
         </td>
     </tr>
 }
 
 </table>
+
